@@ -1,7 +1,7 @@
 ---
 title: "About"
 description: "About me"
-date: 2020-07-14
+date: 2023-01-19
 ---
 
 Hi, I'm Victor.
