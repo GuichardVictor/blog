@@ -1,14 +1,20 @@
 languageCode: "en-us"
 baseUrl: ""
-title: "Anubis"
+title: "Victor's Blog"
 theme: "anubis"
 paginate: 10
-disqusShortname: "yourdiscussshortname"
-googleAnalytics: "G-12345"
+disqusShortname: ""
+googleAnalytics: ""
 enableRobotsTXT: true
+enableEmoji: true
 
 menu:
   main:
+  - identifier: about
+    name: About
+    title: About
+    url: /about/
+    weight: 0
   - identifier: archive
     name: Archive
     title: Archive
@@ -16,8 +22,8 @@ menu:
     weight: 0
 
 params:
-  author: "John Doe"
-  email: mail@example.org # used for microformats
+  author: "Victor Guichard"
+  email: guichardvictor@gmail.com # used for microformats
   avatar: "/images/me.png" # used for microformats
   description: ""
   # Uncomment if you need this
@@ -29,7 +35,7 @@ params:
   #   - js/main.js # relative path to "assets" directory
   dateFormat: "2006-01-02"
   paginationSinglePost: true
-  style: light-without-switcher
+  style: dark-without-switcher
   readMore: false # show read more button
   readNextPosts: 5  # show 5 related posts, 0 by default
   disableSummary: false
@@ -41,19 +47,19 @@ params:
   utterancesIssue: "" # optional
   utterancesLabel: "" # optional
   # isso support
-  isso:
-    enabled: true # mandatory
-    data: "https://comments.example.com/" # mandatory
-    jsLocation: "https://comments.example.com/js/embed.min.js" # mandatory
-    css: true # optional
-    lang: "de" # optional
-    replyToSelf: true # mandatory
-    requireAuthor: true # mandatory
-    requireEmail: true # mandatory
-    id: "thread-id" # optional
-    avatar: true # optional
-    avatar-bg: "#f0f0f0" # optional
-    feed: false # optional
+  # isso:
+  #   enabled: true # mandatory
+  #   data: "https://comments.example.com/" # mandatory
+  #   jsLocation: "https://comments.example.com/js/embed.min.js" # mandatory
+  #   css: true # optional
+  #   lang: "de" # optional
+  #   replyToSelf: true # mandatory
+  #   requireAuthor: true # mandatory
+  #   requireEmail: true # mandatory
+  #   id: "thread-id" # optional
+  #   avatar: true # optional
+  #   avatar-bg: "#f0f0f0" # optional
+  #   feed: false # optional
   graphcommentId: ""
   webmentions:
     url: https://yourdomain.com/webemntions/receive
@@ -61,10 +67,9 @@ params:
     pingback: true
   social:
   - id: github
-    name: gohugoio
-#  - id: hugo
-#    url: "https://gohugo.io/"
-#    icon: "hugo"
+    name: GuichardVictor
+  - id: linkedin
+    name: victor-guichard
 
 markup:
   goldmark:
