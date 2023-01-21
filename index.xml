@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Victor's Blog</title><link>https://guichardvictor.github.io/</link><description>Victor's Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><atom:link href="https://guichardvictor.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>About</title><link>https://guichardvictor.github.io/about/</link><pubDate>Thu, 19 Jan 2023 00:00:00 +0000</pubDate><guid>https://guichardvictor.github.io/about/</guid><description>&lt;p>Hi, I&amp;rsquo;m Victor.&lt;/p>
+&lt;p>I&amp;rsquo;m currently working as Software Engineer (AI) at &lt;a href="https://dental-monitoring.com/">DentalMonitoring&lt;/a>,
+a french medtech unicorn.&lt;/p>
+&lt;p>I love learning new things so don&amp;rsquo;t hesitate sharing with me new technologies!&lt;/p>
+&lt;p>My latest interest are:&lt;/p>
+&lt;ul>
+&lt;li>Machine Learning (PyTorch, Jax, Deep Learning Production)&lt;/li>
+&lt;li>Frontend Development (Svelte + TS + Tailwindcss)&lt;/li>
+&lt;li>Backend Development (Rust)&lt;/li>
+&lt;/ul>
+&lt;p>You will find some of my projects and some blogs in this website!&lt;/p></description></item></channel></rss>
