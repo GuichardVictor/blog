@@ -1,5 +1,5 @@
 languageCode: "en-us"
-baseUrl: ""
+baseUrl: "https://guichardvictor.github.io"
 title: "Victor's Blog"
 theme: "anubis"
 paginate: 10
