@@ -20,6 +20,16 @@ menu:
     title: Archive
     url: /posts/
     weight: 0
+  - identifier: tags
+    name: Tags
+    title: Tags
+    url: /tags/
+    weight: 0
+  - identifier: categories
+    name: Categories
+    title: Categories
+    url: /categories/
+    weight: 0
 
 params:
   author: "Victor Guichard"

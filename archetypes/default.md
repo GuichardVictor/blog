@@ -1,6 +1,15 @@
 ---
 title: "{{ replace .Name "-" " " | title }}"
 date: {{ .Date }}
-draft: true
+draft: false
+tags:
+    - rust
+    - ml
+    - c++
+    - frontend
+    - backend
+    - python
+categories:
+    - programming
 ---
 
