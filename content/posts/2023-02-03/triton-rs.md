@@ -110,7 +110,7 @@ pub mod triton {
 And start sending gRPC messages to the Triton Inference Server with [`tokio-rs`](https://github.com/tokio-rs/tokio):
 
 ```rs
-let url = env::var("TRITON_HOST").ok().unwrap_or("http://localhost:8001")
+let url = env::var("TRITON_HOST").ok().unwrap_or("http://localhost:8001");
 let mut client = GrpcInferenceServiceClient::connect(url.into()).await.unwrap();
 let response = client.server_live(ServerLiveRequest {}).await.unwrap();
 println!("{:?}", response.into_inner()) // OK => the server is live :D
