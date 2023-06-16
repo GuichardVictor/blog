@@ -141,15 +141,15 @@ if __name__ == '__main__':
 Here is an image of my cute dog:
 
 <p align="center">
-  <img src="images/my_dog.png" /></br>
+  <img src="/posts/2023-06-17/images/my_dog.png" /></br>
   <em>My cute dog :D</em>
 </p>
 
 And here are some generated images:
 
 <p align="center">
-  <img src="images/generated_1.png" />
-    <img src="images/generated_2.png" /></br>
+  <img src="/posts/2023-06-17/images/generated_1.png" />
+    <img src="/posts/2023-06-17/images/generated_2.png" /></br>
   <em>< dog > sitting at the beach</em>
 </p>
 
