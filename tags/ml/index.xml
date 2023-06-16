@@ -1,4 +1,140 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>ml on Victor's Blog</title><link>https://guichardvictor.github.io/tags/ml/</link><description>Victor's Blog (ml)</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 03 Feb 2023 16:24:50 +0100</lastBuildDate><atom:link href="https://guichardvictor.github.io/tags/ml/index.xml" rel="self" type="application/rss+xml"/><item><title>Rust Triton Client</title><link>https://guichardvictor.github.io/posts/2023-02-03/triton-rs/</link><pubDate>Fri, 03 Feb 2023 16:24:50 +0100</pubDate><guid>https://guichardvictor.github.io/posts/2023-02-03/triton-rs/</guid><description>&lt;p>I&amp;rsquo;ve recently tried to improve model deployement and test different approaches.
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>ml on Victor's Blog</title><link>https://guichardvictor.github.io/tags/ml/</link><description>Victor's Blog (ml)</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 03 Feb 2023 16:24:50 +0100</lastBuildDate><atom:link href="https://guichardvictor.github.io/tags/ml/index.xml" rel="self" type="application/rss+xml"/><item><title>LoRA finetuning</title><link>https://guichardvictor.github.io/posts/2023-06-17/lora/</link><pubDate>Fri, 03 Feb 2023 16:24:50 +0100</pubDate><guid>https://guichardvictor.github.io/posts/2023-06-17/lora/</guid><description>&lt;p>LoRAs are a recent approach in finetuning LLM and Diffusion models.
+They work by injecting new weights to specific layers,
+usually at the attention layers as they are some of the most crutial parts of these models.&lt;/p>
+&lt;p>They allow both efficient fine tuning and lower file size for sharing fine tuned models.&lt;/p>
+&lt;p>Diffusion models fine tuning exists in many forms, the most frequent are Dreambooth, textual inversion and LoRA. The latter is the most common form as they allow for an easy and fast finetuning and is compatible with the Dreambooth approach.&lt;/p>
+&lt;h2 id="lora-dreambooth" >LoRA Dreambooth
+&lt;span>
+&lt;a href="#lora-dreambooth">
+&lt;svg viewBox="0 0 28 23" height="100%" width="19" xmlns="http://www.w3.org/2000/svg">&lt;path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" fill="none" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/>&lt;path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" fill="none" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/>&lt;/svg>
+&lt;/a>
+&lt;/span>
+&lt;/h2>&lt;p>&lt;ins>@cloneofsimo&lt;/ins> was the first to introduce this concept to Stable Diffusion. In this blog, I will use his &lt;a href="https://github.com/cloneofsimo/lora">repository&lt;/a> to showcase an example of training and inference a new object concept.&lt;/p>
+&lt;h3 id="training" >Training
+&lt;span>
+&lt;a href="#training">
+&lt;svg viewBox="0 0 28 23" height="100%" width="19" xmlns="http://www.w3.org/2000/svg">&lt;path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" fill="none" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/>&lt;path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" fill="none" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/>&lt;/svg>
+&lt;/a>
+&lt;/span>
+&lt;/h3>&lt;p>While training a diffusion model can be costly, training a LoRA is very efficient as it only requires to train the LoRA weights while freezing the others.&lt;/p>
+&lt;p>LoRA Dreambooth allow to learn new concept in both the object and style form. We will focus on the object form, but the training and inference approach is exactly the saame for the style form.&lt;/p>
+&lt;p>Using Huggingface efforts to accelerate and simplify training we can easily launch the process with a single command and without the need of a extremly powerful gpu.&lt;/p>
+&lt;p>This is how you&amp;rsquo;d use it to fine-tune a model using pictures of &lt;strong>my dog&lt;/strong>.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>export MODEL_NAME&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;stabilityai/stable-diffusion-2-1-base&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>export INSTANCE_DIR&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;./data/mug&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>export OUTPUT_DIR&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;./trained_models/&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>export TEMPLATE&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;object&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>export TOKEN&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&amp;lt;mydog&amp;gt;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>export DEVICE&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;cuda:0&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lora_pti &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --pretrained_model_name_or_path&lt;span style="color:#f92672">=&lt;/span>$MODEL_NAME &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --instance_data_dir&lt;span style="color:#f92672">=&lt;/span>$INSTANCE_DIR &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --output_dir&lt;span style="color:#f92672">=&lt;/span>$OUTPUT_DIR &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --train_text_encoder &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --resolution&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">512&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --train_batch_size&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --gradient_accumulation_steps&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">4&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --scale_lr &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --learning_rate_unet&lt;span style="color:#f92672">=&lt;/span>1e-4 &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --learning_rate_text&lt;span style="color:#f92672">=&lt;/span>1e-5 &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --learning_rate_ti&lt;span style="color:#f92672">=&lt;/span>5e-4 &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --color_jitter &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --lr_scheduler&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;linear&amp;#34;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --lr_warmup_steps&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --placeholder_tokens&lt;span style="color:#f92672">=&lt;/span>$TOKEN &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --use_template&lt;span style="color:#f92672">=&lt;/span>$TEMPLATE &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --save_steps&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">100&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --max_train_steps_ti&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">1000&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --max_train_steps_tuning&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">1000&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --perform_inversion&lt;span style="color:#f92672">=&lt;/span>True &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --clip_ti_decay &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --weight_decay_ti&lt;span style="color:#f92672">=&lt;/span>0.000 &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --weight_decay_lora&lt;span style="color:#f92672">=&lt;/span>0.001&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --continue_inversion &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --continue_inversion_lr&lt;span style="color:#f92672">=&lt;/span>1e-4 &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --device&lt;span style="color:#f92672">=&lt;/span>$DEVICE &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --lora_rank&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Running this using on an rtx 2080 ti should take around 15 minutes and will generate multiple checkpoint of the trained LoRA.&lt;/p>
+&lt;h3 id="inference" >Inference
+&lt;span>
+&lt;a href="#inference">
+&lt;svg viewBox="0 0 28 23" height="100%" width="19" xmlns="http://www.w3.org/2000/svg">&lt;path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" fill="none" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/>&lt;path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" fill="none" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/>&lt;/svg>
+&lt;/a>
+&lt;/span>
+&lt;/h3>&lt;p>To infer with trained LoRA, we need to patch the stable diffusion model used. Basically, we load the LoRA weights, and add them to the required layers. We can then scale the LoRA weights using an alpha parameter that will follow this formula:&lt;/p>
+&lt;p>$W_{sd} = W_{StableDiffusion} + \alpha W_{LoRA} $&lt;/p>
+&lt;p>By setting $\alpha$ at 0, we will only use the weights of Stable Diffusion, setting at 1 will make it fully use the LoRA weights, and greater than 1 will make the model mainly use the LoRA weights.&lt;/p>
+&lt;p>The inference code is as simple as this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-py" data-lang="py">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">from&lt;/span> diffusers &lt;span style="color:#f92672">import&lt;/span> StableDiffusionPipeline, EulerAncestralDiscreteScheduler
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> torch
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">from&lt;/span> lora_diffusion &lt;span style="color:#f92672">import&lt;/span> tune_lora_scale, patch_pipe
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> argparse
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">parse_args&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> parser &lt;span style="color:#f92672">=&lt;/span> argparse&lt;span style="color:#f92672">.&lt;/span>ArgumentParser()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> parser&lt;span style="color:#f92672">.&lt;/span>add_argument(&lt;span style="color:#e6db74">&amp;#34;--model&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> parser&lt;span style="color:#f92672">.&lt;/span>add_argument(&lt;span style="color:#e6db74">&amp;#34;--prompt&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> parser&lt;span style="color:#f92672">.&lt;/span>add_argument(&lt;span style="color:#e6db74">&amp;#34;--scale&amp;#34;&lt;/span>, type&lt;span style="color:#f92672">=&lt;/span>float, default&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">0.8&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> args &lt;span style="color:#f92672">=&lt;/span> parser&lt;span style="color:#f92672">.&lt;/span>parse_args()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> args
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> __name__ &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#39;__main__&amp;#39;&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> args &lt;span style="color:#f92672">=&lt;/span> parse_args()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># Load Stable Diffusion&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> model_id &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;stabilityai/stable-diffusion-2-1-base&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> pipe &lt;span style="color:#f92672">=&lt;/span> StableDiffusionPipeline&lt;span style="color:#f92672">.&lt;/span>from_pretrained(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> model_id,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> torch_dtype&lt;span style="color:#f92672">=&lt;/span>torch&lt;span style="color:#f92672">.&lt;/span>float16
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )&lt;span style="color:#f92672">.&lt;/span>to(&lt;span style="color:#e6db74">&amp;#34;cuda&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> pipe&lt;span style="color:#f92672">.&lt;/span>scheduler &lt;span style="color:#f92672">=&lt;/span> EulerAncestralDiscreteScheduler&lt;span style="color:#f92672">.&lt;/span>from_config(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> pipe&lt;span style="color:#f92672">.&lt;/span>scheduler&lt;span style="color:#f92672">.&lt;/span>config
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># Apply the LoRA layers on the model&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> patch_pipe(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> pipe,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> args&lt;span style="color:#f92672">.&lt;/span>model,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> patch_text&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">True&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> patch_ti&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">True&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> patch_unet&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">True&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># Tune the LoRA alpha&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> tune_lora_scale(pipe&lt;span style="color:#f92672">.&lt;/span>unet, args&lt;span style="color:#f92672">.&lt;/span>scale)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> tune_lora_scale(pipe&lt;span style="color:#f92672">.&lt;/span>text_encoder, args&lt;span style="color:#f92672">.&lt;/span>scale)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># Inference&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> torch&lt;span style="color:#f92672">.&lt;/span>manual_seed(&lt;span style="color:#ae81ff">0&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> image &lt;span style="color:#f92672">=&lt;/span> pipe(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> args&lt;span style="color:#f92672">.&lt;/span>prompt,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> num_inference_steps&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">50&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> guidance_scale&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">7&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )&lt;span style="color:#f92672">.&lt;/span>images[&lt;span style="color:#ae81ff">0&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> image&lt;span style="color:#f92672">.&lt;/span>save(&lt;span style="color:#e6db74">&amp;#34;output.jpg&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Here is an image of my cute dog:&lt;/p>
+&lt;p align="center">
+&lt;img src="images/my_dog.png" />&lt;/br>
+&lt;em>My cute dog :D&lt;/em>
+&lt;/p>
+&lt;p>And here are some generated images:&lt;/p>
+&lt;p align="center">
+&lt;img src="images/generated_1.png" />
+&lt;img src="images/generated_2.png" />&lt;/br>
+&lt;em>&lt; dog > sitting at the beach&lt;/em>
+&lt;/p>
+&lt;h3 id="side-notes" >Side Notes
+&lt;span>
+&lt;a href="#side-notes">
+&lt;svg viewBox="0 0 28 23" height="100%" width="19" xmlns="http://www.w3.org/2000/svg">&lt;path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" fill="none" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/>&lt;path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" fill="none" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/>&lt;/svg>
+&lt;/a>
+&lt;/span>
+&lt;/h3>&lt;p>A recent paper of Google claims to provide much better results in the styling category using approach called (&lt;strong>StyleDrop&lt;/strong>)[https://styledrop.github.io/].
+Combining &lt;strong>StyleDrop&lt;/strong> for the style and &lt;strong>Dreambooth&lt;/strong> to learn new objects might allow to generate images with even more accurate results for more specific use cases.&lt;/p></description></item><item><title>Rust Triton Client</title><link>https://guichardvictor.github.io/posts/2023-02-03/triton-rs/</link><pubDate>Fri, 03 Feb 2023 16:24:50 +0100</pubDate><guid>https://guichardvictor.github.io/posts/2023-02-03/triton-rs/</guid><description>&lt;p>I&amp;rsquo;ve recently tried to improve model deployement and test different approaches.
 After trying &lt;code>Tensorflow Serving&lt;/code> and &lt;code>Torch Serve&lt;/code>, I decided to take a look
 at &lt;code>Nvidia Triton&lt;/code>. Its high performance and multiple model backends is very
 appealing. However I wanted to integrate it to my rust backend stack. Therefore,
@@ -78,7 +214,7 @@ Which can also be used with &lt;a href="https://github.com/tokio-rs/prost">&lt;c
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rs" data-lang="rs">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">let&lt;/span> url &lt;span style="color:#f92672">=&lt;/span> env::var(&lt;span style="color:#e6db74">&amp;#34;TRITON_HOST&amp;#34;&lt;/span>).ok().unwrap_or(&lt;span style="color:#e6db74">&amp;#34;http://localhost:8001&amp;#34;&lt;/span>);
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">let&lt;/span> &lt;span style="color:#66d9ef">mut&lt;/span> client &lt;span style="color:#f92672">=&lt;/span> GrpcInferenceServiceClient::connect(url.into()).&lt;span style="color:#66d9ef">await&lt;/span>.unwrap();
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">let&lt;/span> response &lt;span style="color:#f92672">=&lt;/span> client.server_live(ServerLiveRequest {}).&lt;span style="color:#66d9ef">await&lt;/span>.unwrap();
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>println!(&lt;span style="color:#e6db74">&amp;#34;{:?}&amp;#34;&lt;/span>, response.into_inner()) &lt;span style="color:#75715e">// OK =&amp;gt; the server is live :D
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>println!(&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">{:?}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>, response.into_inner()) &lt;span style="color:#75715e">// OK =&amp;gt; the server is live :D
 &lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="improvements" >Improvements
 &lt;span>
 &lt;a href="#improvements">

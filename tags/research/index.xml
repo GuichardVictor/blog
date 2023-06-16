@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>programming on Victor's Blog</title><link>https://guichardvictor.github.io/categories/programming/</link><description>Victor's Blog (programming)</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 03 Feb 2023 16:24:50 +0100</lastBuildDate><atom:link href="https://guichardvictor.github.io/categories/programming/index.xml" rel="self" type="application/rss+xml"/><item><title>LoRA finetuning</title><link>https://guichardvictor.github.io/posts/2023-06-17/lora/</link><pubDate>Fri, 03 Feb 2023 16:24:50 +0100</pubDate><guid>https://guichardvictor.github.io/posts/2023-06-17/lora/</guid><description>&lt;p>LoRAs are a recent approach in finetuning LLM and Diffusion models.
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>research on Victor's Blog</title><link>https://guichardvictor.github.io/tags/research/</link><description>Victor's Blog (research)</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 03 Feb 2023 16:24:50 +0100</lastBuildDate><atom:link href="https://guichardvictor.github.io/tags/research/index.xml" rel="self" type="application/rss+xml"/><item><title>LoRA finetuning</title><link>https://guichardvictor.github.io/posts/2023-06-17/lora/</link><pubDate>Fri, 03 Feb 2023 16:24:50 +0100</pubDate><guid>https://guichardvictor.github.io/posts/2023-06-17/lora/</guid><description>&lt;p>LoRAs are a recent approach in finetuning LLM and Diffusion models.
 They work by injecting new weights to specific layers,
 usually at the attention layers as they are some of the most crutial parts of these models.&lt;/p>
 &lt;p>They allow both efficient fine tuning and lower file size for sharing fine tuned models.&lt;/p>
@@ -134,91 +134,4 @@ usually at the attention layers as they are some of the most crutial parts of th
 &lt;/a>
 &lt;/span>
 &lt;/h3>&lt;p>A recent paper of Google claims to provide much better results in the styling category using approach called (&lt;strong>StyleDrop&lt;/strong>)[https://styledrop.github.io/].
-Combining &lt;strong>StyleDrop&lt;/strong> for the style and &lt;strong>Dreambooth&lt;/strong> to learn new objects might allow to generate images with even more accurate results for more specific use cases.&lt;/p></description></item><item><title>Rust Triton Client</title><link>https://guichardvictor.github.io/posts/2023-02-03/triton-rs/</link><pubDate>Fri, 03 Feb 2023 16:24:50 +0100</pubDate><guid>https://guichardvictor.github.io/posts/2023-02-03/triton-rs/</guid><description>&lt;p>I&amp;rsquo;ve recently tried to improve model deployement and test different approaches.
-After trying &lt;code>Tensorflow Serving&lt;/code> and &lt;code>Torch Serve&lt;/code>, I decided to take a look
-at &lt;code>Nvidia Triton&lt;/code>. Its high performance and multiple model backends is very
-appealing. However I wanted to integrate it to my rust backend stack. Therefore,
-I decided to implement a rust version of the GRPC Client.&lt;/p>
-&lt;h2 id="triton-client" >Triton Client
-&lt;span>
-&lt;a href="#triton-client">
-&lt;svg viewBox="0 0 28 23" height="100%" width="19" xmlns="http://www.w3.org/2000/svg">&lt;path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" fill="none" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/>&lt;path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" fill="none" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/>&lt;/svg>
-&lt;/a>
-&lt;/span>
-&lt;/h2>&lt;p>&lt;code>Proto&lt;/code> files can compiled into different programming languages.
-In &lt;code>Rust&lt;/code>, &lt;a href="https://github.com/tokio-rs/prost">&lt;code>prost&lt;/code>&lt;/a> can be used to generate simple &lt;code>Rust&lt;/code> code from &lt;code>proto&lt;/code> files.
-Which can also be used with &lt;a href="https://github.com/tokio-rs/prost">&lt;code>tonic&lt;/code>&lt;/a> to write production ready code that uses &lt;code>gRPC&lt;/code>.&lt;/p>
-&lt;h3 id="retreiving-the-triton-server-protos" >Retreiving the Triton Server Protos
-&lt;span>
-&lt;a href="#retreiving-the-triton-server-protos">
-&lt;svg viewBox="0 0 28 23" height="100%" width="19" xmlns="http://www.w3.org/2000/svg">&lt;path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" fill="none" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/>&lt;path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" fill="none" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/>&lt;/svg>
-&lt;/a>
-&lt;/span>
-&lt;/h3>&lt;p>After creating a new rust project, we can retreive the &lt;code>proto&lt;/code> files defined by nvidia using git submodules:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>git submodule add git@github.com:triton-inference-server/common.git
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>The &lt;code>protos&lt;/code> are defined in &lt;code>/common/protobuf/&lt;/code>.&lt;/p>
-&lt;p>The advantages of using a submodule is if the code is updated by nvidia we will spend less time to update our dependencies.&lt;/p>
-&lt;h3 id="generating-rust-code" >Generating Rust Code
-&lt;span>
-&lt;a href="#generating-rust-code">
-&lt;svg viewBox="0 0 28 23" height="100%" width="19" xmlns="http://www.w3.org/2000/svg">&lt;path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" fill="none" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/>&lt;path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" fill="none" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/>&lt;/svg>
-&lt;/a>
-&lt;/span>
-&lt;/h3>&lt;p>To generate &lt;code>rust&lt;/code> code from these &lt;code>protos&lt;/code> we will need to add these dependencies:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>cargo add prost
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cargo add tonic
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cargo add --build tonic-build
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>We then need to write some code in the &lt;code>/build.rs&lt;/code> file:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rs" data-lang="rs">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() -&amp;gt; Result&lt;span style="color:#f92672">&amp;lt;&lt;/span>(), Box&lt;span style="color:#f92672">&amp;lt;&lt;/span>&lt;span style="color:#66d9ef">dyn&lt;/span> std::error::Error&lt;span style="color:#f92672">&amp;gt;&amp;gt;&lt;/span> {
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> pb_dir: &lt;span style="color:#a6e22e">std&lt;/span>::path::PathBuf &lt;span style="color:#f92672">=&lt;/span> env::var(&lt;span style="color:#e6db74">&amp;#34;TRITON_PROTOBUF&amp;#34;&lt;/span>)
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .ok()
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .unwrap_or_else(&lt;span style="color:#f92672">||&lt;/span> concat!(env!(&lt;span style="color:#e6db74">&amp;#34;CARGO_MANIFEST_DIR&amp;#34;&lt;/span>), &lt;span style="color:#e6db74">&amp;#34;/common/protobuf&amp;#34;&lt;/span>).to_string())
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .into();
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> protobuf_paths: Vec&lt;span style="color:#f92672">&amp;lt;&lt;/span>_&lt;span style="color:#f92672">&amp;gt;&lt;/span> &lt;span style="color:#f92672">=&lt;/span> [&lt;span style="color:#e6db74">&amp;#34;grpc_service.proto&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;health.proto&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;model_config.proto&amp;#34;&lt;/span>]
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .map(&lt;span style="color:#f92672">|&lt;/span>protoname&lt;span style="color:#f92672">|&lt;/span> pb_dir.join(protoname))
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .to_vec();
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> tonic_build::configure()
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .build_server(&lt;span style="color:#66d9ef">true&lt;/span>)
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .compile(&lt;span style="color:#f92672">&amp;amp;&lt;/span>protobuf_paths, &lt;span style="color:#f92672">&amp;amp;&lt;/span>[&lt;span style="color:#f92672">&amp;amp;&lt;/span>pb_dir])&lt;span style="color:#f92672">?&lt;/span>;
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Ok(())
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>This part will read from the environement the source directory of the triton protos and return a path:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rs" data-lang="rs">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">let&lt;/span> pb_dir: &lt;span style="color:#a6e22e">std&lt;/span>::path::PathBuf &lt;span style="color:#f92672">=&lt;/span> env::var(&lt;span style="color:#e6db74">&amp;#34;TRITON_PROTOBUF&amp;#34;&lt;/span>)
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .ok()
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .unwrap_or_else(&lt;span style="color:#f92672">||&lt;/span> concat!(env!(&lt;span style="color:#e6db74">&amp;#34;CARGO_MANIFEST_DIR&amp;#34;&lt;/span>), &lt;span style="color:#e6db74">&amp;#34;/common/protobuf&amp;#34;&lt;/span>).to_string())
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .into();
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>We then need to get the complete path of each protos we want to generate rust code:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rs" data-lang="rs">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">let&lt;/span> protobuf_paths: Vec&lt;span style="color:#f92672">&amp;lt;&lt;/span>_&lt;span style="color:#f92672">&amp;gt;&lt;/span> &lt;span style="color:#f92672">=&lt;/span> [&lt;span style="color:#e6db74">&amp;#34;grpc_service.proto&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;health.proto&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;model_config.proto&amp;#34;&lt;/span>]
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .map(&lt;span style="color:#f92672">|&lt;/span>protoname&lt;span style="color:#f92672">|&lt;/span> pb_dir.join(protoname))
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .to_vec();
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>And finally call &lt;code>tonic_build&lt;/code> to generate the rust code the defined output directory:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rs" data-lang="rs">&lt;span style="display:flex;">&lt;span>tonic_build::configure()
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .build_server(&lt;span style="color:#66d9ef">true&lt;/span>)
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .compile(&lt;span style="color:#f92672">&amp;amp;&lt;/span>protobuf_paths, &lt;span style="color:#f92672">&amp;amp;&lt;/span>[&lt;span style="color:#f92672">&amp;amp;&lt;/span>pb_dir])&lt;span style="color:#f92672">?&lt;/span>;
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>and call&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>cargo build
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="using-the-generated-code" >Using the generated code
-&lt;span>
-&lt;a href="#using-the-generated-code">
-&lt;svg viewBox="0 0 28 23" height="100%" width="19" xmlns="http://www.w3.org/2000/svg">&lt;path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" fill="none" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/>&lt;path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" fill="none" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/>&lt;/svg>
-&lt;/a>
-&lt;/span>
-&lt;/h3>&lt;p>Now that we have generated the rust code from our &lt;code>proto&lt;/code> files we can include it in our &lt;code>lib.rs&lt;/code> as a mod:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rs" data-lang="rs">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">mod&lt;/span> triton {
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> include!(concat!(env!(&lt;span style="color:#e6db74">&amp;#34;OUT_DIR&amp;#34;&lt;/span>), &lt;span style="color:#e6db74">&amp;#34;/inference.rs&amp;#34;&lt;/span>));
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>And start sending gRPC messages to the Triton Inference Server with &lt;a href="https://github.com/tokio-rs/tokio">&lt;code>tokio-rs&lt;/code>&lt;/a>:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rs" data-lang="rs">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">let&lt;/span> url &lt;span style="color:#f92672">=&lt;/span> env::var(&lt;span style="color:#e6db74">&amp;#34;TRITON_HOST&amp;#34;&lt;/span>).ok().unwrap_or(&lt;span style="color:#e6db74">&amp;#34;http://localhost:8001&amp;#34;&lt;/span>);
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">let&lt;/span> &lt;span style="color:#66d9ef">mut&lt;/span> client &lt;span style="color:#f92672">=&lt;/span> GrpcInferenceServiceClient::connect(url.into()).&lt;span style="color:#66d9ef">await&lt;/span>.unwrap();
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">let&lt;/span> response &lt;span style="color:#f92672">=&lt;/span> client.server_live(ServerLiveRequest {}).&lt;span style="color:#66d9ef">await&lt;/span>.unwrap();
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>println!(&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">{:?}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>, response.into_inner()) &lt;span style="color:#75715e">// OK =&amp;gt; the server is live :D
-&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="improvements" >Improvements
-&lt;span>
-&lt;a href="#improvements">
-&lt;svg viewBox="0 0 28 23" height="100%" width="19" xmlns="http://www.w3.org/2000/svg">&lt;path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" fill="none" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/>&lt;path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" fill="none" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/>&lt;/svg>
-&lt;/a>
-&lt;/span>
-&lt;/h3>&lt;p>We can improve the current code by implementing wrappers on the &lt;code>GrpcInferenceServiceClient&lt;/code> and the different messages such as builders.&lt;/p></description></item></channel></rss>
+Combining &lt;strong>StyleDrop&lt;/strong> for the style and &lt;strong>Dreambooth&lt;/strong> to learn new objects might allow to generate images with even more accurate results for more specific use cases.&lt;/p></description></item></channel></rss>
