@@ -118,13 +118,13 @@ usually at the attention layers as they are some of the most crutial parts of th
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> image&lt;span style="color:#f92672">.&lt;/span>save(&lt;span style="color:#e6db74">&amp;#34;output.jpg&amp;#34;&lt;/span>)
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Here is an image of my cute dog:&lt;/p>
 &lt;p align="center">
-&lt;img src="images/my_dog.png" />&lt;/br>
+&lt;img src="https://guichardvictor.github.io/posts/2023-06-17/images/my_dog.png" />&lt;/br>
 &lt;em>My cute dog :D&lt;/em>
 &lt;/p>
 &lt;p>And here are some generated images:&lt;/p>
 &lt;p align="center">
-&lt;img src="images/generated_1.png" />
-&lt;img src="images/generated_2.png" />&lt;/br>
+&lt;img src="https://guichardvictor.github.io/posts/2023-06-17/images/generated_1.png" />
+&lt;img src="https://guichardvictor.github.io/posts/2023-06-17/images/generated_2.png" />&lt;/br>
 &lt;em>&lt; dog > sitting at the beach&lt;/em>
 &lt;/p>
 &lt;h3 id="side-notes" >Side Notes
