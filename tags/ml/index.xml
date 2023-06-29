@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>ml on Victor's Blog</title><link>https://guichardvictor.github.io/tags/ml/</link><description>Victor's Blog (ml)</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 03 Feb 2023 16:24:50 +0100</lastBuildDate><atom:link href="https://guichardvictor.github.io/tags/ml/index.xml" rel="self" type="application/rss+xml"/><item><title>LoRA finetuning</title><link>https://guichardvictor.github.io/posts/2023-06-17/lora/</link><pubDate>Fri, 03 Feb 2023 16:24:50 +0100</pubDate><guid>https://guichardvictor.github.io/posts/2023-06-17/lora/</guid><description>&lt;p>LoRAs are a recent approach in finetuning LLM and Diffusion models.
-They work by injecting new weights to specific layers,
-usually at the attention layers as they are some of the most crutial parts of these models.&lt;/p>
-&lt;p>They allow both efficient fine tuning and lower file size for sharing fine tuned models.&lt;/p>
-&lt;p>Diffusion models fine tuning exists in many forms, the most frequent are Dreambooth, textual inversion and LoRA. The latter is the most common form as they allow for an easy and fast finetuning and is compatible with the Dreambooth approach.&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>ml on Victor's Blog</title><link>https://guichardvictor.github.io/tags/ml/</link><description>Victor's Blog (ml)</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sat, 03 Jun 2023 16:24:50 +0100</lastBuildDate><atom:link href="https://guichardvictor.github.io/tags/ml/index.xml" rel="self" type="application/rss+xml"/><item><title>LoRA finetuning</title><link>https://guichardvictor.github.io/posts/2023-06-17/lora/</link><pubDate>Sat, 03 Jun 2023 16:24:50 +0100</pubDate><guid>https://guichardvictor.github.io/posts/2023-06-17/lora/</guid><description>&lt;p>LoRAs are a recent and effective approach for fine-tuning Language Model (LLM) and Diffusion models.
+This technique involves injecting new weights into specific layers, particularly the attention layers, which play a crucial role in these models.&lt;/p>
+&lt;p>One of the significant advantages of LoRAs is their ability to enable efficient fine-tuning while reducing the file size for sharing the fine-tuned models. This compatibility with the Dreambooth approach further contributes to its widespread adoption.&lt;/p>
+&lt;p>Fine-tuning Diffusion models can take various forms, including Dreambooth, textual inversion, and LoRA. However,
+LoRA has emerged as the most prevalent approach due to its ease of use and quick fine-tuning capabilities,
+along with its compatibility with the Dreambooth approach.&lt;/p>
 &lt;h2 id="lora-dreambooth" >LoRA Dreambooth
 &lt;span>
 &lt;a href="#lora-dreambooth">
@@ -16,10 +17,10 @@ usually at the attention layers as they are some of the most crutial parts of th
 &lt;svg viewBox="0 0 28 23" height="100%" width="19" xmlns="http://www.w3.org/2000/svg">&lt;path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" fill="none" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/>&lt;path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" fill="none" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/>&lt;/svg>
 &lt;/a>
 &lt;/span>
-&lt;/h3>&lt;p>While training a diffusion model can be costly, training a LoRA is very efficient as it only requires to train the LoRA weights while freezing the others.&lt;/p>
-&lt;p>LoRA Dreambooth allow to learn new concept in both the object and style form. We will focus on the object form, but the training and inference approach is exactly the saame for the style form.&lt;/p>
-&lt;p>Using Huggingface efforts to accelerate and simplify training we can easily launch the process with a single command and without the need of a extremly powerful gpu.&lt;/p>
-&lt;p>This is how you&amp;rsquo;d use it to fine-tune a model using pictures of &lt;strong>my dog&lt;/strong>.&lt;/p>
+&lt;/h3>&lt;p>Training a diffusion model can be expensive in terms of computational resources. However, training a LoRA is highly efficient since it only requires training the LoRA weights while keeping the remaining parameters frozen.&lt;/p>
+&lt;p>LoRA Dreambooth enables the learning of new concepts in both the object and style forms. In this case, our focus will be on the object form, although the training and inference approach remains the same for the style form.&lt;/p>
+&lt;p>Thanks to the efforts of Huggingface in accelerating and simplifying training processes, launching the fine-tuning process can be achieved effortlessly with a single command, eliminating the need for an extremely powerful GPU.&lt;/p>
+&lt;p>Here&amp;rsquo;s how you can use it to fine-tune a model using pictures of &lt;strong>my dog&lt;/strong>.&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>export MODEL_NAME&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;stabilityai/stable-diffusion-2-1-base&amp;#34;&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>export INSTANCE_DIR&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;./data/mug&amp;#34;&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>export OUTPUT_DIR&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;./trained_models/&amp;#34;&lt;/span>
@@ -63,7 +64,7 @@ usually at the attention layers as they are some of the most crutial parts of th
 &lt;/a>
 &lt;/span>
 &lt;/h3>&lt;p>To infer with trained LoRA, we need to patch the stable diffusion model used. Basically, we load the LoRA weights, and add them to the required layers. We can then scale the LoRA weights using an alpha parameter that will follow this formula:&lt;/p>
-&lt;p>$W_{sd} = W_{StableDiffusion} + \alpha W_{LoRA} $&lt;/p>
+&lt;p>$ W_{sd} = W_{StableDiffusion} + \alpha W_{LoRA} $&lt;/p>
 &lt;p>By setting $\alpha$ at 0, we will only use the weights of Stable Diffusion, setting at 1 will make it fully use the LoRA weights, and greater than 1 will make the model mainly use the LoRA weights.&lt;/p>
 &lt;p>The inference code is as simple as this:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-py" data-lang="py">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">from&lt;/span> diffusers &lt;span style="color:#f92672">import&lt;/span> StableDiffusionPipeline, EulerAncestralDiscreteScheduler
@@ -133,7 +134,7 @@ usually at the attention layers as they are some of the most crutial parts of th
 &lt;svg viewBox="0 0 28 23" height="100%" width="19" xmlns="http://www.w3.org/2000/svg">&lt;path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" fill="none" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/>&lt;path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" fill="none" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/>&lt;/svg>
 &lt;/a>
 &lt;/span>
-&lt;/h3>&lt;p>A recent paper of Google claims to provide much better results in the styling category using approach called (&lt;strong>StyleDrop&lt;/strong>)[https://styledrop.github.io/].
+&lt;/h3>&lt;p>A recent paper of Google claims to provide much better results in the styling category using approach called &lt;a href="https://styledrop.github.io/">&lt;strong>StyleDrop&lt;/strong>&lt;/a>.
 Combining &lt;strong>StyleDrop&lt;/strong> for the style and &lt;strong>Dreambooth&lt;/strong> to learn new objects might allow to generate images with even more accurate results for more specific use cases.&lt;/p></description></item><item><title>Rust Triton Client</title><link>https://guichardvictor.github.io/posts/2023-02-03/triton-rs/</link><pubDate>Fri, 03 Feb 2023 16:24:50 +0100</pubDate><guid>https://guichardvictor.github.io/posts/2023-02-03/triton-rs/</guid><description>&lt;p>I&amp;rsquo;ve recently tried to improve model deployement and test different approaches.
 After trying &lt;code>Tensorflow Serving&lt;/code> and &lt;code>Torch Serve&lt;/code>, I decided to take a look
 at &lt;code>Nvidia Triton&lt;/code>. Its high performance and multiple model backends is very
