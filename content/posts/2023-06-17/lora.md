@@ -1,6 +1,6 @@
 ---
 title: "LoRA finetuning"
-date: 2023-02-03T16:24:50+01:00
+date: 2023-06-03T16:24:50+01:00
 draft: false
 tags:
   - ml
@@ -9,14 +9,14 @@ categories:
   - programming
 ---
 
-LoRAs are a recent approach in finetuning LLM and Diffusion models.
-They work by injecting new weights to specific layers,
-usually at the attention layers as they are some of the most crutial parts of these models.
+LoRAs are a recent and effective approach for fine-tuning Language Model (LLM) and Diffusion models.
+This technique involves injecting new weights into specific layers, particularly the attention layers, which play a crucial role in these models.
 
-They allow both efficient fine tuning and lower file size for sharing fine tuned models.
+One of the significant advantages of LoRAs is their ability to enable efficient fine-tuning while reducing the file size for sharing the fine-tuned models. This compatibility with the Dreambooth approach further contributes to its widespread adoption.
 
-Diffusion models fine tuning exists in many forms, the most frequent are Dreambooth, textual inversion and LoRA. The latter is the most common form as they allow for an easy and fast finetuning and is compatible with the Dreambooth approach.
-
+Fine-tuning Diffusion models can take various forms, including Dreambooth, textual inversion, and LoRA. However,
+LoRA has emerged as the most prevalent approach due to its ease of use and quick fine-tuning capabilities,
+along with its compatibility with the Dreambooth approach.
 <!--more-->
 
 
@@ -27,13 +27,13 @@ Diffusion models fine tuning exists in many forms, the most frequent are Dreambo
 
 ### Training
 
-While training a diffusion model can be costly, training a LoRA is very efficient as it only requires to train the LoRA weights while freezing the others.
+Training a diffusion model can be expensive in terms of computational resources. However, training a LoRA is highly efficient since it only requires training the LoRA weights while keeping the remaining parameters frozen.
 
-LoRA Dreambooth allow to learn new concept in both the object and style form. We will focus on the object form, but the training and inference approach is exactly the saame for the style form.
+LoRA Dreambooth enables the learning of new concepts in both the object and style forms. In this case, our focus will be on the object form, although the training and inference approach remains the same for the style form.
 
-Using Huggingface efforts to accelerate and simplify training we can easily launch the process with a single command and without the need of a extremly powerful gpu.
+Thanks to the efforts of Huggingface in accelerating and simplifying training processes, launching the fine-tuning process can be achieved effortlessly with a single command, eliminating the need for an extremely powerful GPU.
 
-This is how you'd use it to fine-tune a model using pictures of __my dog__.
+Here's how you can use it to fine-tune a model using pictures of __my dog__.
 
 
 ```sh
@@ -80,7 +80,7 @@ Running this using on an rtx 2080 ti should take around 15 minutes and will gene
 
 To infer with trained LoRA, we need to patch the stable diffusion model used. Basically, we load the LoRA weights, and add them to the required layers. We can then scale the LoRA weights using an alpha parameter that will follow this formula:
 
-$W_{sd} = W_{StableDiffusion} + \alpha W_{LoRA} $
+$ W_{sd} = W_{StableDiffusion} + \alpha W_{LoRA} $
 
 By setting $\alpha$ at 0, we will only use the weights of Stable Diffusion, setting at 1 will make it fully use the LoRA weights, and greater than 1 will make the model mainly use the LoRA weights.
 
@@ -155,5 +155,5 @@ And here are some generated images:
 
 ### Side Notes
 
-A recent paper of Google claims to provide much better results in the styling category using approach called (__StyleDrop__)[https://styledrop.github.io/].
+A recent paper of Google claims to provide much better results in the styling category using approach called [__StyleDrop__](https://styledrop.github.io/).
 Combining __StyleDrop__ for the style and __Dreambooth__ to learn new objects might allow to generate images with even more accurate results for more specific use cases.
